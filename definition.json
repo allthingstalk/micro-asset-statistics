@@ -1,0 +1,29 @@
+{
+  "name": "jan's first test",
+  "asset":"asset with type number",
+  "comment": "this is a def for 1 asset. Each group should be for a unique timeslot",
+  "groups":[
+    {
+      "comment": "reset is expressed as every 'year:month:day:hour:minute', so in this case it's every day. The name field is used to help identify assets related to this group",
+      "reset": "0:0:1:0:0",
+      "name": "every day",
+      "calculate":[
+        {"function": "count"},
+        {"function": "min"},
+        {"function": "max"},
+        {"function": "avg"},
+        {"function": "std"},
+        {"function": "distribution", "bucketsize": 2}
+      ]
+    },
+    {
+      "name": "always",
+      "comment": "when no reset, values are never reset",
+      "calculate":[
+        {"function": "count"},
+        {"function": "distribution", "bucketsize": 2}
+      ]
+    }
+  ]
+
+}
