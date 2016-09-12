@@ -50,7 +50,7 @@ def calculateStatistics():
     current.connection.connect_api(definition['username'], definition['pwd'])    # create the connection -> this is a dynamic object, so we don't yet have the connection, can be for a different user.
     stats = AssetStats(definition, current.connection)
     for group in stats.groups:
-        group.calculate(stats.asset.value)
+        group.calculate(current)
 
 
 @When([])
