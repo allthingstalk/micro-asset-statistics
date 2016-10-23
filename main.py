@@ -6,7 +6,8 @@ __email__ = "jb@allthingstalk.com"
 __status__ = "Prototype"  # "Development", or "Production"
 
 import logging
-logging.getLogger().setLevel(logging.INFO)
+import logging.config
+logging.config.fileConfig('logging.config')
 from flask import Flask, render_template, Response, request
 from flask.ext.api import status
 import os
@@ -80,6 +81,6 @@ try:
     loadAll()
     iot.run()
     if __name__ == '__main__':
-        app.run(host='0.0.0.0', debug=True, threaded=True, port=1000, use_reloader=False)  # blocking
+        app.run(host='0.0.0.0', debug=True, threaded=True, port=2000, use_reloader=False)  # blocking
 except:
     logging.exception("failed to start statistician engine")

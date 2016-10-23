@@ -23,7 +23,8 @@
       "comment": "when no reset, values are never reset",
       "calculate":[
         {"function": "count"},
-        {"function": "distsumtime", "bucketsize": 2}
+        {"function": "distsumtime", "bucketsize": 2},
+        {"function": "distsumtime%"}
       ]
     }
   ]

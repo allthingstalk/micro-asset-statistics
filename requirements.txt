@@ -1,2 +1,5 @@
 att_event_engine
+att_trusted_event_engine
 python-dateutil
+flask
+flask-api
