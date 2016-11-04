@@ -5,8 +5,9 @@ __maintainer__ = "Jan Bogaerts"
 __email__ = "jb@allthingstalk.com"
 __status__ = "Prototype"  # "Development", or "Production"
 
-UserName = "AttAdmin" #"testjan"
-Pwd =  "Att953953" #"testtestjan"
+UserName = "space-maker-admin" #"testjan"
+Pwd =  "1ZT1EJWMYVoFh6eIg5m62EkxhZomGkx5" #"testtestjan"
 Api = "api.smartliving.io"
 Broker = "broker.smartliving.io"
+vhost = "space-maker-vhost"
 

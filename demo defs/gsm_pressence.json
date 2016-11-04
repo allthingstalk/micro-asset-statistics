@@ -1,0 +1,18 @@
+{
+  "name": "jan's first test",
+  "username": "KardCard",
+  "pwd": "Funkmaster1",
+  "asset":"dfuyaPXbgZi4U8tTa0cVLsM2",
+  "comment": "this is a def for 1 asset. Each group should be for a unique timeslot",
+  "groups":[
+    {
+      "comment": "reset is expressed as every 'year:month:week:day:hour:minute', so in this case it's every day. The name field is used to help identify assets related to this group",
+      "reset": "0:0:1:0:0:0",
+      "name": "every_day",
+      "calculate":[
+        {"function": "distsumtime", "bucketsize": 2}
+      ]
+    }
+  ]
+
+}

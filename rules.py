@@ -7,7 +7,8 @@ __status__ = "Prototype"  # "Development", or "Production"
 
 import datetime
 
-from att_event_engine.when import When, appendToMonitorList
+from att_event_engine.when import When
+from att_trusted_event_server.when_server import appendToMonitorList
 from att_event_engine.resources import Sensor, Asset
 from att_event_engine.timer import Timer
 from att_event_engine.att import HttpClient

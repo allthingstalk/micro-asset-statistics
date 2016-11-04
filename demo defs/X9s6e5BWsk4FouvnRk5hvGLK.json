@@ -2,7 +2,7 @@
   "name": "jan's first test",
   "username": "testjan",
   "pwd": "testtestjan",
-  "asset":"5UJ5solx5AKeBYG4JUJruyH0",
+  "asset":"X9s6e5BWsk4FouvnRk5hvGLK",
   "comment": "this is a def for 1 asset. Each group should be for a unique timeslot",
   "groups":[
     {
@@ -15,8 +15,7 @@
         {"function": "max"},
         {"function": "avg"},
         {"function": "std"},
-        {"function": "delta"},
-        {"function": "dist%", "bucketsize": 2, "comment": "dont use std and std% in same 'calculate' with different params, that doesn't work."}
+        {"function": "dist", "bucketsize": 2}
       ]
     },
     {
@@ -24,7 +23,8 @@
       "comment": "when no reset, values are never reset",
       "calculate":[
         {"function": "count"},
-        {"function": "dist", "bucketsize": 2, "min": 0, "max": 20}
+        {"function": "distsumtime", "bucketsize": 2},
+        {"function": "distsumtimeprocent"}
       ]
     }
   ]

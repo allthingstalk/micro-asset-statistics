@@ -12,10 +12,11 @@ from flask import Flask, render_template, Response, request
 from flask.ext.api import status
 import os
 import json
+import uuid
 
 #import att_event_engine.iotApplication as iotApp
 import att_trusted_event_server.iotApplication as iotApp
-from att_event_engine.att import Client
+from att_trusted_event_server.client import Client
 import credentials
 
 app = Flask(__name__)
@@ -31,7 +32,7 @@ def registerEventsForDef(definition):
     :return:
     """
     connection = Client()
-    connection.connect(definition['username'], definition['pwd'])
+    connection.connect_api(definition['username'], definition['pwd'])
     obj = rules.AssetStats(definition, connection)
     map(lambda x: x.createAssets(connection), obj.groups)  # make certain that all the assets have been created.
     obj.register()
@@ -59,8 +60,24 @@ def storeDef(name, value):
         f.write(value)
 
 
-@app.route('/definition', methods=['PUT'])
+@app.route('/definition', methods=['POST'])
 def addEvent():
+    """
+    called when a statistics definition needs to be added to the list
+    :return: ok or error
+    """
+    try:
+        data = json.loads(request.data)
+        obj = registerEventsForDef(data)
+        storeDef(obj.asset.id, request.data)
+        return 'ok', status.HTTP_200_OK
+    except  Exception as e:
+        logging.exception("failed to store definition")
+        return str(e), status.HTTP_405_METHOD_NOT_ALLOWED
+
+
+@app.route('/definition', methods=['PUT'])
+def updateEvent(id):
     """
     called when a statistics definition needs to be added to the list
     :return: ok or error
