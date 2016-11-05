@@ -29,7 +29,7 @@ def getSec(str):
     values = str.split(':')
     timeoffset = datetime.timedelta(days=int(values[3]),hours=int(values[4]),minutes=int(values[5]))
 
-    nextTime = curTime + timeoffset + relativedelta(months=int(values[1]) * int(values[0]), weeks=values[2])
+    nextTime = curTime + timeoffset + relativedelta(years= int(values[0]),months=int(values[1]), weeks=int(values[2]))
     result = nextTime - curTime
     return result.total_seconds()
 
@@ -49,7 +49,7 @@ def calculateStatistics():
     definition = loadDefinition(current.id+".json")
     current.connection = HttpClient()
     current.connection.connect_api(definition['username'], definition['pwd'])    # create the connection -> this is a dynamic object, so we don't yet have the connection, can be for a different user.
-    stats = AssetStats(definition, current.connection)
+    stats = AssetStats(definition, current.connection, current)
     for group in stats.groups:
         group.calculate(current)
 
@@ -70,15 +70,25 @@ class AssetStats(object):
     wraps a single asset statistics definition. This object contains all the groupings that are defined and which
      should be calculated whenever the value of the asset to be monitored, changes.
     """
-    def __init__(self, definition, connection):
+    def __init__(self, definition, connection, asset=None):
         """
         create the object
+        :param connection: the connection to use
+        :param asset: the asset object, if none, the object will be created from the definition,
         :param definition: a json dict that contains the definition for the stats. (see examples in definitions dir)
         """
-        self.asset = Sensor(definition['asset'], connection=connection)
+        if not asset:
+            self.asset = Sensor(definition['asset'], connection=connection)
+        else:
+            self.asset = asset
         self.groups = []
         self.timers = []
+        groupNames = set()                                          # used to check that all the groupnames are unique, otherwise, we have an issue.
         for group in definition['groups']:
+            groupname = group['name']
+            if groupname in groupNames:
+                raise Exception("duplicate groupname '{}' detected in {}".format(groupname, definition['name']))
+            groupNames.add(groupname)
             if 'reset' in group:
                 reset = group['reset']
             else:
@@ -88,10 +98,11 @@ class AssetStats(object):
             if "reset" in group:
                 timer = Timer(self.asset, group['name'])
                 self.timers.append(timer)
-                # wait a little with this, timer not yet active.
-                # timer.set(getSec(group['reset']))
                 timer.group = stat
 
     def register(self):
+        def registerTimer(timer):
+            appendToMonitorList(resetGroup, timer)
+            timer.set(getSec(timer.group.resetEvery))
         appendToMonitorList(calculateStatistics, self.asset)
-        map(lambda x: appendToMonitorList(resetGroup, x), self.timers)
+        map(lambda x: registerTimer(x), self.timers)

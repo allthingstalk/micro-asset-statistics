@@ -8,9 +8,28 @@
     {
       "comment": "reset is expressed as every 'year:month:week:day:hour:minute', so in this case it's every day. The name field is used to help identify assets related to this group",
       "reset": "0:0:0:1:0:0",
-      "name": "every_day",
+      "name": "everyday",
       "calculate":[
         {"function": "distprocent", "bucketsize": 2, "comment": "dont use std and std% in same 'calculate' with different params, that doesn't work."}
+      ]
+    },
+
+    {
+      "reset": "0:0:0:0:0:1",
+      "name": "everyminute",
+      "calculate":[
+        {"function": "max"},
+        {"function": "min"},
+        {"function": "count"},
+        {"function": "avg"},
+        {"function": "std"}
+      ]
+    },
+
+    {
+      "name": "always",
+      "calculate":[
+        {"function": "delta"}
       ]
     }
   ]

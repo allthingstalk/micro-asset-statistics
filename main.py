@@ -17,10 +17,10 @@ import uuid
 #import att_event_engine.iotApplication as iotApp
 import att_trusted_event_server.iotApplication as iotApp
 from att_trusted_event_server.client import Client
-import credentials
+import settings
 
 app = Flask(__name__)
-iot = iotApp.IotApplication(credentials.UserName, credentials.Pwd, credentials.Api, credentials.Broker, "statistition")
+iot = iotApp.IotApplication(settings.UserName, settings.Pwd, settings.Api, settings.Broker, "statistician")
 
 import rules
 
@@ -31,12 +31,15 @@ def registerEventsForDef(definition):
     :param definition:
     :return:
     """
-    connection = Client()
-    connection.connect_api(definition['username'], definition['pwd'])
-    obj = rules.AssetStats(definition, connection)
-    map(lambda x: x.createAssets(connection), obj.groups)  # make certain that all the assets have been created.
-    obj.register()
-    return obj
+    try:
+        connection = Client()
+        connection.connect_api(definition['username'], definition['pwd'])
+        obj = rules.AssetStats(definition, connection)
+        map(lambda x: x.createAssets(connection), obj.groups)  # make certain that all the assets have been created.
+        obj.register()
+        return obj
+    except:
+        logging.exception("failed to load definition: {}".format(definition))
 
 def loadAll():
     """
@@ -98,6 +101,7 @@ try:
     loadAll()
     iot.run()
     if __name__ == '__main__':
-        app.run(host='0.0.0.0', debug=True, threaded=True, port=2000, use_reloader=False)  # blocking
+        app.run(host='0.0.0.0', debug=True, threaded=True, port=settings.HTTPPort, use_reloader=False)  # blocking
 except:
     logging.exception("failed to start statistician engine")
+iot.stop()

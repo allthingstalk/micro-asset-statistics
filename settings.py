@@ -11,3 +11,4 @@ Api = "api.smartliving.io"
 Broker = "broker.smartliving.io"
 vhost = "space-maker-vhost"
 
+HTTPPort = 3000                     #port used to upload definitions to the application.

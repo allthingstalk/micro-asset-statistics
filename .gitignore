@@ -89,3 +89,4 @@ ENV/
 # Rope project settings
 .ropeproject
 definitions/gsm_pressence.json
+logs/

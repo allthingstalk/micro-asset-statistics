@@ -8,7 +8,7 @@ __status__ = "Prototype"  # "Development", or "Production"
 
 import requests
 import json
-import credentials
+import settings
 
 id = ""
 
