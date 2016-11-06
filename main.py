@@ -48,7 +48,10 @@ def loadAll():
     """
     files = [f for f in os.listdir('definitions') if os.path.isfile(os.path.join('definitions', f))]
     for file in files:
-        registerEventsForDef(rules.loadDefinition(file))
+        try:
+            registerEventsForDef(rules.loadDefinition(file))
+        except:
+            logging.exception("failed to load def: {}".format(file))
 
 
 

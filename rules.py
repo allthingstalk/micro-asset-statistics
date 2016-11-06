@@ -61,8 +61,8 @@ def resetGroup():
     :return: None
     """
     timer = Timer.current()
+    timer.set(getSec(timer.group.resetEvery))  # restart the timer. do this first, so we get best possible timing.
     timer.group.resetValues()
-    timer.set(getSec(timer.group.resetEvery))  # restart the timer
 
 
 class AssetStats(object):

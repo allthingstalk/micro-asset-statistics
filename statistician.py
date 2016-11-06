@@ -47,7 +47,7 @@ class Statistician:
                 if "distsumtime" not in self._functions:
                     name = "distsumtime"                                 # change the name to std, so we process the next 'if' statemtn (include std and it's subparts)
                     self._functions[name] = function                     # the parameters for std are the same as for distprocent
-            if name == "dist" or name == "distsumtime":
+            if (name == "dist" or name == "distsumtime") and self._asset.profile['type'] != 'boolean':    # boolean dist does not need min or max
                 if "min" not in self._functions and "min" not in function:      # if user specified min, don't need to calculate it.
                     self._functions['min'] = None
                 if "max" not in self._functions and "max" not in function:      # if user specified max, don't need to calculate it.
@@ -191,10 +191,13 @@ class Statistician:
             distDef = self._functions['dist']
             dist = Actuator(device=self._asset.device, name=self.getAssetName('dist'),
                             connection=self._asset.connection)
-            result, min = self.prepareDistList(dist.value, context, distDef)
             if isinstance(value, bool):
                 index = 0 if value == False else 1
+                result = dist.value
+                if not result:
+                    result = [0, 0]
             else:
+                result, min = self.prepareDistList(dist.value, context, distDef)
                 index = (value - min) / distDef['bucketsize']
             if index < len(result) and index >= 0:
                 result[index] += 1
@@ -232,7 +235,6 @@ class Statistician:
         if "distsumtime" in self._functions:
             distDef = self._functions['distsumtime']
             dist = Actuator(device=self._asset.device, name=self.getAssetName('distsumtime'), connection=self._asset.connection)
-            result, min = self.prepareDistList(dist.value, context, distDef)
             value = asset.value
 
             prevValAct = Actuator(device=self._asset.device, name=self.getAssetName('distsumtimeprev'), connection=self._asset.connection)
@@ -243,13 +245,17 @@ class Statistician:
                 prevVal = prevVal['value']
                 if isinstance(prevVal, bool):
                     index = 0 if prevVal == False else 1
+                    result = dist.value
+                    if not result:
+                        result = [0, 0]
                 else:
+                    result, min = self.prepareDistList(dist.value, context, distDef)
                     index = (prevVal - min) / distDef['bucketsize']
                 if index < len(result) and index >= 0:
                     timeDif = dateutil.parser.parse(newTime) - prevDate
                     result[index] += timeDif.total_seconds()
                     context['distsumtime'] = result
-            dist.value = result  # send the value back to the server.
+                dist.value = result  # send the value back to the server.
             prevValAct.value = {'value': value, 'timestamp': newTime}
 
     def try_calculate_delta(self, value, context):

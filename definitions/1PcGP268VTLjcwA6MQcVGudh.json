@@ -1,0 +1,19 @@
+{
+  "name": "jan's first test",
+  "username": "testjan",
+  "pwd": "testtestjan",
+  "asset":"1PcGP268VTLjcwA6MQcVGudh",
+  "comment": "this is a def for 1 asset. Each group should be for a unique timeslot",
+  "groups":[
+       {
+      "name": "always",
+      "calculate":[
+        {"function": "dist"},
+        {"function": "distprocent"},
+        {"function": "distsumtime"},
+        {"function": "distsumtimeprocent"}
+      ]
+    }
+  ]
+
+}
