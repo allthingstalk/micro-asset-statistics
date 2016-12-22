@@ -19,19 +19,30 @@ import json
 from statistician import Statistician
 
 
-def getSec(str):
+def getSec(str, startDate):
     """
     converts a string in the form 'year:month:week:day:hour:minute' into seconds
     :param str: the string to convert
+    :param startDate a dateTime object, representing the start date to use, if any (used to sync period against a fixed point, example beginning of week)
     :return: nr of seconds
     """
     curTime = datetime.datetime.now()
     values = str.split(':')
     timeoffset = datetime.timedelta(days=int(values[3]),hours=int(values[4]),minutes=int(values[5]))
+    nextTime = curTime + timeoffset + relativedelta(years=int(values[0]), months=int(values[1]), weeks=int(values[2]))
+    timeoffset = nextTime - curTime
+    if startDate:
+        startDate = startDate.replace(tzinfo=None)  # remove timezone info for now, it's not yet correctly working.
+        dif = curTime - startDate
+        result = dif.total_seconds() % timeoffset.total_seconds()
+        return timeoffset.total_seconds() - result
+    return timeoffset.total_seconds()
 
-    nextTime = curTime + timeoffset + relativedelta(years= int(values[0]),months=int(values[1]), weeks=int(values[2]))
-    result = nextTime - curTime
-    return result.total_seconds()
+   # dif = curTime - startDate
+
+    #nextTime = curTime + timeoffset + relativedelta(years= int(values[0]),months=int(values[1]), weeks=int(values[2]))
+    #result = nextTime - curTime
+    #return result.total_seconds()
 
 
 def loadDefinition(name):
@@ -61,7 +72,7 @@ def resetGroup():
     :return: None
     """
     timer = Timer.current()
-    timer.set(getSec(timer.group.resetEvery))  # restart the timer. do this first, so we get best possible timing.
+    timer.set(getSec(timer.group.resetEvery, timer.group.startDate))  # restart the timer. do this first, so we get best possible timing.
     timer.group.resetValues()
 
 
@@ -89,11 +100,10 @@ class AssetStats(object):
             if groupname in groupNames:
                 raise Exception("duplicate groupname '{}' detected in {}".format(groupname, definition['name']))
             groupNames.add(groupname)
-            if 'reset' in group:
-                reset = group['reset']
-            else:
-                reset = None
-            stat = Statistician(group['name'], group['calculate'], reset, self.asset)
+
+            reset = group['reset'] if 'reset' in group else None
+            startDate = group['start date'] if 'start date' in group else None
+            stat = Statistician(group['name'], group['calculate'], reset, startDate, self.asset)
             self.groups.append(stat)
             if "reset" in group:
                 timer = Timer(self.asset, group['name'])
@@ -103,6 +113,9 @@ class AssetStats(object):
     def register(self):
         def registerTimer(timer):
             appendToMonitorList(resetGroup, timer)
-            timer.set(getSec(timer.group.resetEvery))
+            success = timer.set(getSec(timer.group.resetEvery, timer.group.startDate))
+            while not success:                  # when we are starting up and on the same server or at the same time, other service could still be starting up, give it some time. Also, no need to try indefinetely.
+                success = timer.set(getSec(timer.group.resetEvery, timer.group.startDate))
+                #todo: don't get stuck indefinetely, but stop or something.
         appendToMonitorList(calculateStatistics, self.asset)
         map(lambda x: registerTimer(x), self.timers)

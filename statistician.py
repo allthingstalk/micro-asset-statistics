@@ -16,7 +16,7 @@ class Statistician:
     performs all the statistical calculations for a single asset.
     """
 
-    def __init__(self, name, functions, resetEvery, asset):
+    def __init__(self, name, functions, resetEvery, startDate, asset):
         """
         create object
         :param functions: a list of 'function' objects that this statistician has to calculate when a value is changed
@@ -29,6 +29,7 @@ class Statistician:
         self._name = name                                               # the name of the statistical group.
         self._functions = {}
         self.resetEvery = resetEvery                                    # so we can restart the timer.
+        self.startDate = dateutil.parser.parse(startDate) if startDate else None
         for function in functions:
             name = function['function']
             self._functions[function['function']] = function            # so we can store some parameters, if there are any

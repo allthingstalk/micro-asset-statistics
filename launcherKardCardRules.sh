@@ -14,7 +14,7 @@ writelog() {
 while true ; do
   #check for network connectivity
   wget -q --tries=10 --timeout=99 --spider http://google.com
-  sleep 1
+  sleep 3                   # give some time for the timer app to start
   if [ $? -eq 0 ]; then
         cd /home/AttAdmin/KardCardRules
         writelog "Starting"

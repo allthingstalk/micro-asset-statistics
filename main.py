@@ -99,8 +99,14 @@ def updateEvent(id):
 
 
 
+def wait_for_timer_service():
+    """
+    waits indefinetely until the timer service is available
+    :return:
+    """
 
 try:
+    wait_for_timer_service();
     loadAll()
     iot.run()
     if __name__ == '__main__':

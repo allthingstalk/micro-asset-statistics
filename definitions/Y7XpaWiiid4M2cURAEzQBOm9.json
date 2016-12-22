@@ -16,6 +16,7 @@
 
     {
       "reset": "0:0:0:0:0:1",
+      "start date": "2016-12-22T00:00:00Z",
       "name": "everyminute",
       "calculate":[
         {"function": "max"},

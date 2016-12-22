@@ -8,6 +8,7 @@
     {
       "comment": "reset is expressed as every 'year:month:week:day:hour:minute', so in this case it's every day. The name field is used to help identify assets related to this group",
       "reset": "0:0:1:0:0:0",
+      "start date": "",
       "name": "every_day",
       "calculate":[
         {"function": "distsumtime", "bucketsize": 2}
